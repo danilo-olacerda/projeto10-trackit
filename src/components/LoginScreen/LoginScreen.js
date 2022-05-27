@@ -1,25 +1,49 @@
 import logo from "../assets/logo.png"
 import styled from "styled-components";
 import {useState} from "react";
-import { useParams, useNavigate } from 'react-router-dom';
-import { Link } from "react-router-dom";
+import {useContext} from "react";
+import UserContext from "../../contexts/UserContext";
+import axios from "axios";
+import {useNavigate} from 'react-router-dom';
+import {Link} from "react-router-dom";
 
 export default function LoginScreen () {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [enable, setEnable] = useState(false);
+    const {setKey} = useContext(UserContext);
 
-    function login(e){
-        e.preventDefault();
+    const navigate = useNavigate();
+
+    function login(event){
+        event.preventDefault();
+        setEnable(true);
+        const body = {
+            email,
+            password
+        };
+        const promise = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login", body);
+        promise
+            .then((e)=>{
+            setKey(e.data.token);
+            navigate("/habitos");
+        })
+            .catch((e)=> {
+            setEnable(false);
+            setEmail("");
+            setPassword("");
+            alert("Email ou senha inválidos!");
+            });
     }
 
     return (
-        <Container>
-            <img src={logo} alt="" />
+        <Container enable={enable}>
+            <img src={logo} alt=""/>
             <form action="submit" onSubmit={login}>
-                <input type="email" placeholder="email" value={password} onChange={e => setPassword(e.target.value)} />
-                <input type="password" placeholder="senha" value={email} onChange={e => setEmail(e.target.value)} />
-                <button type="submit">Entrar</button>
+                <input type="email" disabled={enable} placeholder="email" value={email} onChange={e => setEmail(e.target.value)} required/>
+                <input type="password" disabled={enable} placeholder="senha" value={password} onChange={e => setPassword(e.target.value)} required/>
+                <button type="submit" disabled={enable}>{!enable ? "Entrar" : "Carregando"}</button>
             </form>
 
             <Link to="/cadastro">
@@ -70,11 +94,21 @@ const Container = styled.div`
         background: #52B6FF;
         border-radius: 4.63636px;
     }
+    button:disabled {
+        opacity: 0.7;
+    }
+    input:disabled {
+        color: #AFAFAF;
+        background: #F2F2F2;
+    }
     p {
         font-size: 13.976px;
         line-height: 17px;
         text-align: center;
         text-decoration-line: underline;
         color: #52B6FF;
+    }
+    a {
+        pointer-events: ${props => props.enable ? "none" : "initial"};
     }
 `;

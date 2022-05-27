@@ -1,7 +1,9 @@
 import logo from "../assets/logo.png"
 import styled from "styled-components";
 import {useState} from "react";
+import {useNavigate} from 'react-router-dom';
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 export default function RegisterScreen () {
 
@@ -10,9 +12,18 @@ export default function RegisterScreen () {
     const [name, setName] = useState("");
     const [photo, setPhoto] = useState("");
 
+    const navigate = useNavigate();
+
     function register(e){
         e.preventDefault();
-        console.log("salve");
+        const body = {
+            email,
+            name,
+            image: photo,
+            password
+        };
+        const promise = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up", body);
+        promise.then(()=> navigate("/"));
     }
 
     return (

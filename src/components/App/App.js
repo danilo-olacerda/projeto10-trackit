@@ -1,18 +1,25 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {useState} from "react";
+import UserContext from "../../contexts/UserContext";
 import LoginScreen from '../LoginScreen/LoginScreen';
 import RegisterScreen from "../RegisterScreen/RegisterScreen";
+import MainScreen from "../MainScreen/MainScreen";
 
 export default function App() {
+
+  const [key, setKey] = useState(null);
+
   return (
-    <BrowserRouter>
+  <BrowserRouter>
+    <UserContext.Provider value={{key, setKey}}>
       <Routes>
         <Route path="/" element={<LoginScreen />} />
         <Route path="/cadastro" element={<RegisterScreen  />}/>
-        {/* 
-        <Route path="/sessao/:idSession" element={<Screen3 reserves={reserves} setReserves={setReserves} setFinalId={setFinalId} lastpage={lastpage}/>}/>
-        <Route path="/sucesso" element={<Screen4 reserves={reserves} finalId={finalId} setReserves={setReserves} />}/> */}
+        <Route path="/habitos" element={<MainScreen />}/>
+          {/* 
+          <Route path="/sucesso" element={<Screen4 reserves={reserves} finalId={finalId} setReserves={setReserves} />}/> */}
       </Routes>
-		</BrowserRouter>
+    </UserContext.Provider>
+	</BrowserRouter>
   );
 }
