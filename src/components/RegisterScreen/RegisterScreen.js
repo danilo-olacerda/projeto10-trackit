@@ -11,6 +11,7 @@ export default function RegisterScreen () {
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
     const [photo, setPhoto] = useState("");
+    const [enable, setEnable] = useState(false);
 
     const navigate = useNavigate();
 
@@ -23,18 +24,26 @@ export default function RegisterScreen () {
             password
         };
         const promise = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up", body);
-        promise.then(()=> navigate("/"));
+        setEnable(true);
+        promise
+            .then(()=> {
+            navigate("/");
+        })
+            .catch((info)=> {
+                setEnable(false);
+                alert(info.response.data.message);
+            })
     }
 
     return (
         <Container>
             <img src={logo} alt="" />
             <form action="submit" onSubmit={register}>
-                <input type="email" placeholder="email" value={email} onChange={e => setEmail(e.target.value)} required/>
-                <input type="password" placeholder="senha" value={password} onChange={e => setPassword(e.target.value)} required/>
-                <input type="text" placeholder="nome" value={name} onChange={e => setName(e.target.value)} required/>
-                <input type="url" placeholder="foto" value={photo} onChange={e => setPhoto(e.target.value)} required/>
-                <button type="submit">Cadastrar</button>
+                <input type="email" disabled={enable} placeholder="email" value={email} onChange={e => setEmail(e.target.value)} required/>
+                <input type="password" disabled={enable} placeholder="senha" value={password} onChange={e => setPassword(e.target.value)} required/>
+                <input type="text" disabled={enable} placeholder="nome" value={name} onChange={e => setName(e.target.value)} required/>
+                <input type="url" disabled={enable} placeholder="foto" value={photo} onChange={e => setPhoto(e.target.value)} required/>
+                <button type="submit" disabled={enable}>{enable ? "Carregando" : "Cadastrar"}</button>
             </form>
 
             <Link to="/">
@@ -92,5 +101,12 @@ const Container = styled.div`
         text-align: center;
         text-decoration-line: underline;
         color: #52B6FF;
+    }
+    button:disabled {
+        opacity: 0.7;
+    }
+    input:disabled {
+        color: #AFAFAF;
+        background: #F2F2F2;
     }
 `;

@@ -3,9 +3,11 @@ import styled from "styled-components";
 import { useContext } from "react";
 import UserContext from "../../contexts/UserContext";
 import axios from "axios";
+import { useState } from "react";
 
 export default function NewHabit({weekdays, setWeekdays, setAddNew, habitName, setHabitName, habits, setHabits}) {
 
+    const [enable, setEnable] = useState(false);
     const {key} = useContext(UserContext);
     const days=[{day: "Domingo", dayNumber: 0}, {day: "Segunda", dayNumber: 1}, {day: "Terça", dayNumber: 2}, {day: "Quarta", dayNumber: 3}, {day: "Quinta", dayNumber: 4}, {day: "Sexta", dayNumber: 5}, {day: "Sábado", dayNumber: 6}];
 
@@ -22,18 +24,20 @@ export default function NewHabit({weekdays, setWeekdays, setAddNew, habitName, s
             days: weekdays
         }
         const promise = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits", body, config);
+        setEnable(true);
         promise.then((info)=>{
             setHabits([...habits, info.data]);
             setAddNew(false);
             setWeekdays([]);
             setHabitName("");
+            setEnable(false);
         });
     }
 
     return (
         <Container>
 
-            <input type="text" placeholder="nome do hábito" value={habitName} onChange={(e)=> setHabitName(e.target.value)}/>
+            <input type="text" disabled={enable} placeholder="nome do hábito" value={habitName} onChange={(e)=> setHabitName(e.target.value)}/>
             <Weekdays>
                 {days.map((info, i) => <Days key={i} day={info.day} dayNumber={info.dayNumber} weekdays={weekdays} setWeekdays={setWeekdays} />)}
             </Weekdays>
@@ -41,8 +45,8 @@ export default function NewHabit({weekdays, setWeekdays, setAddNew, habitName, s
             <HabitSave>
                 <div></div>
                 <span>
-                    <CancelButton onClick={() => setAddNew(false)}>Cancelar</CancelButton>
-                    <SaveButton onClick={saveNew}>Salvar</SaveButton>
+                    <CancelButton disabled={enable} onClick={() => setAddNew(false)}>Cancelar</CancelButton>
+                    <SaveButton disabled={enable} onClick={saveNew}>{enable ? "Carregando" : "Salvar"}</SaveButton>
                 </span>
             </HabitSave>
 
@@ -69,6 +73,13 @@ const Container=styled.div`
         font-size: 18px;
         line-height: 25px;
         color: #DBDBDB;
+    }
+    button:disabled {
+        opacity: 0.7;
+    }
+    input:disabled {
+        color: #AFAFAF;
+        background: #F2F2F2;
     }
 `;
 const Weekdays=styled.div`

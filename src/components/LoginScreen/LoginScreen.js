@@ -16,6 +16,12 @@ export default function LoginScreen ({ setUserPhoto }) {
 
     const navigate = useNavigate();
 
+    if (localStorage.getItem("token")){
+        setKey(localStorage.getItem("token"));
+        setUserPhoto(localStorage.getItem("photo"));
+        navigate("/hoje");
+    }
+
     function login(event){
         event.preventDefault();
         setEnable(true);
@@ -28,7 +34,9 @@ export default function LoginScreen ({ setUserPhoto }) {
             .then((e)=>{
             setKey(e.data.token);
             setUserPhoto(e.data.image);
-            navigate("/habitos");
+            localStorage.setItem("token", e.data.token);
+            localStorage.setItem("photo", e.data.image);
+            navigate("/hoje");
         })
             .catch((e)=> {
             setEnable(false);

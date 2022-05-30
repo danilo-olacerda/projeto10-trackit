@@ -11,12 +11,31 @@ import 'dayjs/locale/pt-br';
 import axios from "axios";
 import check from "../assets/check.png"
 
-function Habit({name, done, currentSequence, highestSequence, id}) {
+function getToday(config, setUserHabits, setCompleted) {
+    const promise = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today", config);
+    promise.then((info) => {
+        setUserHabits([...info.data]);
+        let counter = 0;
+        let numberOfHabits = info.data.length;
+        for (let i = 0; i < info.data.length; i++) {
+            if (info.data[i].done === true) {
+                counter++;
+            }
+        }
+        if (numberOfHabits!==0){
+            setCompleted(counter / numberOfHabits);
+        } else {
+            setCompleted(0);
+        }
+    });
+}
+
+function Habit({ name, done, currentSequence, highestSequence, id, setCompleted, setUserHabits }) {
 
     const [selected, setSelected] = useState(done);
     const { key } = useContext(UserContext);
 
-    function toggleSelect () {
+    function toggleSelect() {
         const config = {
             headers: {
                 "Authorization": `Bearer ${key}`
@@ -24,21 +43,31 @@ function Habit({name, done, currentSequence, highestSequence, id}) {
         }
         if (!selected) {
             setSelected(true);
-            
-            axios.post(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${id}/check`, {},config);
+            done = true;
+            const promise = axios.post(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${id}/check`, {}, config);
+            promise.then(()=>{
+                getToday(config, setUserHabits, setCompleted);
+            });
         } else {
             setSelected(false);
-            
-            axios.post(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${id}/uncheck`, {},config);
+            done = false;
+            const promise = axios.post(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${id}/uncheck`, {}, config);
+            promise.then(()=>{
+                getToday(config, setUserHabits, setCompleted);
+            });
         }
     }
 
     return (
-        <HabitBox selected={selected}>
+        <HabitBox selected={selected} currentSequence={currentSequence} highestSequence={highestSequence}>
             <div>
                 <p>{name}</p>
-                <h3>Sequência atual: {currentSequence} dia(s)</h3>
-                <h3>Seu recorde: {highestSequence} dia(s)</h3>
+                <span>
+                    <h3>Sequência atual: </h3><h4> {` ${currentSequence}`} dia(s)</h4>
+                </span>
+                <span>
+                    <h3>Seu recorde: </h3><h4> {` ${highestSequence}`} dia(s)</h4>
+                </span>
             </div>
             <span onClick={toggleSelect}>
                 <img src={check} alt="" />
@@ -47,7 +76,7 @@ function Habit({name, done, currentSequence, highestSequence, id}) {
     )
 }
 
-export default function Today({userphoto, setCompleted, completed}) {
+export default function Today({ userphoto, setCompleted, completed}) {
 
     const navigate = useNavigate();
     const [userHabits, setUserHabits] = useState([0]);
@@ -63,11 +92,7 @@ export default function Today({userphoto, setCompleted, completed}) {
                 "Authorization": `Bearer ${key}`
             }
         }
-        const promise = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today", config);
-        promise.then((info) => {
-            setUserHabits(info.data);
-        });
-        
+        getToday(config, setUserHabits, setCompleted);
         setWeekday(day.format("dddd"));
         setDate(day.format("DD/MM"));
 
@@ -77,7 +102,7 @@ export default function Today({userphoto, setCompleted, completed}) {
         <Container>
             <Top>
                 <div>
-                    <h2 onClick={()=> console.log(completed)}>TrackIt</h2>
+                    <h2 onClick={() => console.log(userHabits)}>TrackIt</h2>
                     <img src={userphoto} alt="" />
                 </div>
             </Top>
@@ -85,11 +110,11 @@ export default function Today({userphoto, setCompleted, completed}) {
             <Habits>
                 <HabitsDay>
                     <p>{weekday.charAt(0).toUpperCase() + weekday.slice(1)}, {date}</p>
-                    <h4>Nenhum hábito concluído ainda</h4>
+                    {completed===0 ? <h4>Nenhum hábito concluído ainda</h4>: <h5>{parseInt(completed*100)}% dos hábitos concluídos</h5>}
                 </HabitsDay>
                 <MyHabits>
-                    {userHabits[0] === 0 ? <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p> : 
-                    userHabits.map((info, i)=> <Habit key={i} id={info.id} name={info.name} done={info.done} currentSequence={info.currentSequence} highestSequence={info.highestSequence}/>)}
+                    {userHabits[0] === 0 || userHabits[0]=== undefined ? <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p> :
+                        userHabits.map((info, i) => <Habit setUserHabits={setUserHabits} setCompleted={setCompleted} userHabits={userHabits} key={i} id={info.id} name={info.name} done={info.done} currentSequence={info.currentSequence} highestSequence={info.highestSequence} />)}
                 </MyHabits>
             </Habits>
 
@@ -97,7 +122,7 @@ export default function Today({userphoto, setCompleted, completed}) {
             <Bottom>
                 <p onClick={() => navigate("/habitos")}>Hábitos</p>
                 <Link to="/hoje">
-                    <CircularProgressbar value={completed*100} text="Hoje" backgroundPadding={6} background styles={buildStyles(progressbarStyle)} />
+                    <CircularProgressbar value={completed * 100} text="Hoje" backgroundPadding={6} background styles={buildStyles(progressbarStyle)} />
                 </Link>
                 <p onClick={() => navigate("/historico")}>Histórico</p>
             </Bottom>
@@ -192,6 +217,11 @@ const HabitsDay = styled.div`
         line-height: 22px;
         color: #BABABA; //#8FC549
     }
+    h5 {
+        font-size: 17.976px;
+        line-height: 22px;
+        color: #8FC549;
+    }
 `;
 const MyHabits = styled.div`
     width: 100%;
@@ -207,18 +237,26 @@ const HabitBox = styled.div`
     div {
         width: calc(100% - 69px);
     }
+    div span {
+        display: flex;
+    }
     p {
         font-size: 19.976px;
         line-height: 25px;
         color: #666666;
     }
-    h3 {
+    h3, h4 {
         word-wrap: break-word;
         font-size: 12.976px;
         line-height: 16px;
         color: #666666;
+        margin-right: 3px;
     }
-    span {
+    h4 {
+        margin-right: 0;
+        color: ${props => props.highestSequence===props.currentSequence && props.currentSequence!==0 ? "#8FC549" : "#666666;"};
+    }
+    > span {
         width: 69px;
         height: 69px;
         background: ${props => props.selected ? "#8FC549" : "#EBEBEB"};

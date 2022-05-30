@@ -22,8 +22,6 @@ export default function App() {
         <Route path="/habitos" element={<MainScreen userphoto={userphoto} completed={completed}/>}/>
         <Route path="/historico" element={<History userphoto={userphoto} completed={completed}/>}/>
         <Route path="/hoje" element={<Today userphoto={userphoto} setCompleted={setCompleted} completed={completed} />}/>
-          {/* 
-          <Route path="/sucesso" element={<Screen4 reserves={reserves} finalId={finalId} setReserves={setReserves} />}/> */}
       </Routes>
     </UserContext.Provider>
 	</BrowserRouter>
