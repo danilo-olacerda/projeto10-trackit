@@ -7,7 +7,7 @@ import axios from "axios";
 import {useNavigate} from 'react-router-dom';
 import {Link} from "react-router-dom";
 
-export default function LoginScreen () {
+export default function LoginScreen ({ setUserPhoto }) {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -27,6 +27,7 @@ export default function LoginScreen () {
         promise
             .then((e)=>{
             setKey(e.data.token);
+            setUserPhoto(e.data.image);
             navigate("/habitos");
         })
             .catch((e)=> {
