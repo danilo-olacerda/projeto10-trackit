@@ -102,7 +102,7 @@ export default function Today({ userphoto, setCompleted, completed}) {
         <Container>
             <Top>
                 <div>
-                    <h2 onClick={() => console.log(userHabits)}>TrackIt</h2>
+                    <h2>TrackIt</h2>
                     <img src={userphoto} alt="" />
                 </div>
             </Top>
