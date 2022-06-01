@@ -106,7 +106,6 @@ export default function Today({ userphoto, setCompleted, completed}) {
                     <img src={userphoto} alt="" />
                 </div>
             </Top>
-
             <Habits>
                 <HabitsDay>
                     <p>{weekday.charAt(0).toUpperCase() + weekday.slice(1)}, {date}</p>

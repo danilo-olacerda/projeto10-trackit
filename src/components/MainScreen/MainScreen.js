@@ -141,6 +141,7 @@ const Container=styled.div`
     min-height: 100%;
 `;
 const Top=styled.div`
+    z-index: 1;
     padding: 0 18px;
     width: 100%;
     height: 70px;

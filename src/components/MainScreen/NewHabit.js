@@ -4,6 +4,7 @@ import { useContext } from "react";
 import UserContext from "../../contexts/UserContext";
 import axios from "axios";
 import { useState } from "react";
+import { ThreeDots } from  'react-loader-spinner';
 
 export default function NewHabit({weekdays, setWeekdays, setAddNew, habitName, setHabitName, habits, setHabits}) {
 
@@ -46,7 +47,7 @@ export default function NewHabit({weekdays, setWeekdays, setAddNew, habitName, s
                 <div></div>
                 <span>
                     <CancelButton disabled={enable} onClick={() => setAddNew(false)}>Cancelar</CancelButton>
-                    <SaveButton disabled={enable} onClick={saveNew}>{enable ? "Carregando" : "Salvar"}</SaveButton>
+                    <SaveButton disabled={enable} onClick={saveNew}>{enable ? <ThreeDots color="#FFFFFF" height={20} width={50} /> : "Salvar"}</SaveButton>
                 </span>
             </HabitSave>
 

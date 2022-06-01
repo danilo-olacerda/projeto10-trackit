@@ -4,6 +4,7 @@ import {useState} from "react";
 import {useNavigate} from 'react-router-dom';
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { ThreeDots } from  'react-loader-spinner';
 
 export default function RegisterScreen () {
 
@@ -43,7 +44,7 @@ export default function RegisterScreen () {
                 <input type="password" disabled={enable} placeholder="senha" value={password} onChange={e => setPassword(e.target.value)} required/>
                 <input type="text" disabled={enable} placeholder="nome" value={name} onChange={e => setName(e.target.value)} required/>
                 <input type="url" disabled={enable} placeholder="foto" value={photo} onChange={e => setPhoto(e.target.value)} required/>
-                <button type="submit" disabled={enable}>{enable ? "Carregando" : "Cadastrar"}</button>
+                <button type="submit" disabled={enable}>{enable ? <ThreeDots color="#FFFFFF" height={20} width={50} /> : "Cadastrar"}</button>
             </form>
 
             <Link to="/">
@@ -90,6 +91,8 @@ const Container = styled.div`
         font-size: 20.976px;
         line-height: 26px;
         text-align: center;
+        display: flex;
+        justify-content: center;
         color: #FFFFFF;
         border: none;
         background: #52B6FF;

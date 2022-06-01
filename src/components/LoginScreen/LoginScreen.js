@@ -6,6 +6,7 @@ import UserContext from "../../contexts/UserContext";
 import axios from "axios";
 import {useNavigate} from 'react-router-dom';
 import {Link} from "react-router-dom";
+import { ThreeDots } from  'react-loader-spinner';
 
 export default function LoginScreen ({ setUserPhoto }) {
 
@@ -52,7 +53,7 @@ export default function LoginScreen ({ setUserPhoto }) {
             <form action="submit" onSubmit={login}>
                 <input type="email" disabled={enable} placeholder="email" value={email} onChange={e => setEmail(e.target.value)} required/>
                 <input type="password" disabled={enable} placeholder="senha" value={password} onChange={e => setPassword(e.target.value)} required/>
-                <button type="submit" disabled={enable}>{!enable ? "Entrar" : "Carregando"}</button>
+                <button type="submit" disabled={enable}>{!enable ? "Entrar" : <ThreeDots color="#FFFFFF" height={26} width={50} />}</button>
             </form>
 
             <Link to="/cadastro">
@@ -98,6 +99,8 @@ const Container = styled.div`
         font-size: 20.976px;
         line-height: 26px;
         text-align: center;
+        display: flex;
+        justify-content: center;
         color: #FFFFFF;
         border: none;
         background: #52B6FF;
